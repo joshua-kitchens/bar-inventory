@@ -8,6 +8,15 @@
       "tags": [],
       "lowThreshold": 1,
       "id": "1778451249293"
+    },
+    {
+      "name": "Jack Daniels",
+      "category": "Spirit",
+      "quantity": 1,
+      "unit": "handle",
+      "tags": [],
+      "lowThreshold": 0,
+      "id": "1778451277766"
     }
   ]
 }
