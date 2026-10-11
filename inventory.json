@@ -260,6 +260,15 @@
       "tags": [],
       "lowThreshold": 1,
       "id": "1791746508224"
+    },
+    {
+      "name": "400 Conejos Mezcal",
+      "category": "Spirit",
+      "quantity": 1,
+      "unit": "bottle",
+      "tags": [],
+      "lowThreshold": 0,
+      "id": "1791746543957"
     }
   ]
 }
