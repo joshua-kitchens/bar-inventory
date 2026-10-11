@@ -350,6 +350,15 @@
       "tags": [],
       "lowThreshold": 0,
       "id": "1791747003142"
+    },
+    {
+      "name": "Angostura Orange Bitters",
+      "category": "Bitters",
+      "quantity": 1,
+      "unit": "bottle",
+      "tags": [],
+      "lowThreshold": 1,
+      "id": "1791747025225"
     }
   ]
 }
