@@ -17,6 +17,15 @@
       "tags": [],
       "lowThreshold": 0,
       "id": "1778451277766"
+    },
+    {
+      "name": "Serac Rye",
+      "category": "Spirit",
+      "quantity": 1,
+      "unit": "bottle",
+      "tags": [],
+      "lowThreshold": 1,
+      "id": "1791745466736"
     }
   ]
 }
