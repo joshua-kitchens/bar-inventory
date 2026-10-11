@@ -1,15 +1,6 @@
 {
   "items": [
     {
-      "name": "Costco Vodka",
-      "category": "Spirit",
-      "quantity": 1,
-      "unit": "bottle",
-      "tags": [],
-      "lowThreshold": 2,
-      "id": "1778451249293"
-    },
-    {
       "name": "Jack Daniels",
       "category": "Spirit",
       "quantity": 1,
