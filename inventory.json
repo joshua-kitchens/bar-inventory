@@ -332,6 +332,15 @@
       "tags": [],
       "lowThreshold": 0,
       "id": "1791746903725"
+    },
+    {
+      "name": "Blueberry Syrup",
+      "category": "Syrup",
+      "quantity": 1,
+      "unit": "bottle",
+      "tags": [],
+      "lowThreshold": 1,
+      "id": "1791746990475"
     }
   ]
 }
