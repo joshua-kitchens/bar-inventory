@@ -215,6 +215,15 @@
       "tags": [],
       "lowThreshold": 0,
       "id": "1791746391874"
+    },
+    {
+      "name": "Hendricks Gin",
+      "category": "Spirit",
+      "quantity": 1,
+      "unit": "bottle",
+      "tags": [],
+      "lowThreshold": 0,
+      "id": "1791746407524"
     }
   ]
 }
