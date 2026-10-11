@@ -26,6 +26,15 @@
       "tags": [],
       "lowThreshold": 1,
       "id": "1791745466736"
+    },
+    {
+      "name": "Sweet Vermouth",
+      "category": "Spirit",
+      "quantity": 1,
+      "unit": "bottle",
+      "tags": [],
+      "lowThreshold": 0,
+      "id": "1791745505886"
     }
   ]
 }
