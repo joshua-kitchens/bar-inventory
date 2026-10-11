@@ -305,6 +305,15 @@
       "tags": [],
       "lowThreshold": 0,
       "id": "1791746832408"
+    },
+    {
+      "name": "Krikland Burbon",
+      "category": "Spirit",
+      "quantity": 1,
+      "unit": "bottle",
+      "tags": [],
+      "lowThreshold": 0,
+      "id": "1791746844925"
     }
   ]
 }
