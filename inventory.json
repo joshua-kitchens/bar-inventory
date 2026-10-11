@@ -161,6 +161,15 @@
       "tags": [],
       "lowThreshold": 0,
       "id": "1791746153573"
+    },
+    {
+      "name": "Bulleit Burbon",
+      "category": "Spirit",
+      "quantity": 1,
+      "unit": "bottle",
+      "tags": [],
+      "lowThreshold": 0.5,
+      "id": "1791746197807"
     }
   ]
 }
