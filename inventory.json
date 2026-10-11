@@ -431,6 +431,15 @@
       "tags": [],
       "lowThreshold": 0,
       "id": "1791747190042"
+    },
+    {
+      "name": "Bloody Mary mix",
+      "category": "Mixer",
+      "quantity": 1,
+      "unit": "bottle",
+      "tags": [],
+      "lowThreshold": 1,
+      "id": "1791747925113"
     }
   ]
 }
