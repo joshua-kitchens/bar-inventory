@@ -62,6 +62,15 @@
       "tags": [],
       "lowThreshold": 0,
       "id": "1791745647487"
+    },
+    {
+      "name": "absolute Vanilla",
+      "category": "Spirit",
+      "quantity": 1,
+      "unit": "bottle",
+      "tags": [],
+      "lowThreshold": 0,
+      "id": "1791745670770"
     }
   ]
 }
