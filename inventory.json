@@ -120,7 +120,7 @@
     {
       "name": "Tito's Vodka",
       "category": "Spirit",
-      "quantity": 0.5,
+      "quantity": 1.5,
       "unit": "bottle",
       "tags": [],
       "lowThreshold": 0,
