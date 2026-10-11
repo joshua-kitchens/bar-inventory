@@ -422,6 +422,15 @@
       "tags": [],
       "lowThreshold": 0,
       "id": "1791747170609"
+    },
+    {
+      "name": "Coconut Cream",
+      "category": "Syrup",
+      "quantity": 1,
+      "unit": "bottle",
+      "tags": [],
+      "lowThreshold": 0,
+      "id": "1791747190042"
     }
   ]
 }
