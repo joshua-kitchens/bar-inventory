@@ -359,6 +359,15 @@
       "tags": [],
       "lowThreshold": 1,
       "id": "1791747025225"
+    },
+    {
+      "name": "Peychaud's Bitter",
+      "category": "Bitters",
+      "quantity": 1,
+      "unit": "bottle",
+      "tags": [],
+      "lowThreshold": 1,
+      "id": "1791747051425"
     }
   ]
 }
