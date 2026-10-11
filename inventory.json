@@ -224,6 +224,15 @@
       "tags": [],
       "lowThreshold": 0,
       "id": "1791746407524"
+    },
+    {
+      "name": "Herbsaint",
+      "category": "Spirit",
+      "quantity": 1,
+      "unit": "bottle",
+      "tags": [],
+      "lowThreshold": 0,
+      "id": "1791746424574"
     }
   ]
 }
