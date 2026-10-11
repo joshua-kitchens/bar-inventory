@@ -80,6 +80,15 @@
       "tags": [],
       "lowThreshold": 0.5,
       "id": "1791745697137"
+    },
+    {
+      "name": "Kirkland Tequila Reposado",
+      "category": "Spirit",
+      "quantity": 0.5,
+      "unit": "bottle",
+      "tags": [],
+      "lowThreshold": 0.5,
+      "id": "1791745731753"
     }
   ]
 }
