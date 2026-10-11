@@ -314,6 +314,15 @@
       "tags": [],
       "lowThreshold": 0,
       "id": "1791746844925"
+    },
+    {
+      "name": "Johnny Walker Double Black",
+      "category": "Spirit",
+      "quantity": 1,
+      "unit": "bottle",
+      "tags": [],
+      "lowThreshold": 0,
+      "id": "1791746868375"
     }
   ]
 }
