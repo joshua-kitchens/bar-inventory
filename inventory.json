@@ -341,6 +341,15 @@
       "tags": [],
       "lowThreshold": 1,
       "id": "1791746990475"
+    },
+    {
+      "name": "Rubarb Bitters",
+      "category": "Bitters",
+      "quantity": 1,
+      "unit": "bottle",
+      "tags": [],
+      "lowThreshold": 0,
+      "id": "1791747003142"
     }
   ]
 }
