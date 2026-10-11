@@ -386,6 +386,15 @@
       "tags": [],
       "lowThreshold": 0,
       "id": "1791747083608"
+    },
+    {
+      "name": "Agave Syrup",
+      "category": "Syrup",
+      "quantity": 1,
+      "unit": "bottle",
+      "tags": [],
+      "lowThreshold": 0,
+      "id": "1791747109276"
     }
   ]
 }
