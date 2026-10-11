@@ -233,6 +233,15 @@
       "tags": [],
       "lowThreshold": 0,
       "id": "1791746424574"
+    },
+    {
+      "name": "Campari",
+      "category": "Spirit",
+      "quantity": 0.5,
+      "unit": "bottle",
+      "tags": [],
+      "lowThreshold": 0,
+      "id": "1791746463207"
     }
   ]
 }
