@@ -98,6 +98,15 @@
       "tags": [],
       "lowThreshold": 0,
       "id": "1791745756820"
+    },
+    {
+      "name": "Disaronno",
+      "category": "Spirit",
+      "quantity": 1,
+      "unit": "bottle",
+      "tags": [],
+      "lowThreshold": 0,
+      "id": "1791745779370"
     }
   ]
 }
