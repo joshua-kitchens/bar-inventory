@@ -278,6 +278,15 @@
       "tags": [],
       "lowThreshold": 0,
       "id": "1791746644741"
+    },
+    {
+      "name": "Jack Daniels",
+      "category": "Spirit",
+      "quantity": 1,
+      "unit": "bottle",
+      "tags": [],
+      "lowThreshold": 1,
+      "id": "1791746652674"
     }
   ]
 }
