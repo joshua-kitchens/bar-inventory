@@ -107,6 +107,15 @@
       "tags": [],
       "lowThreshold": 0,
       "id": "1791745779370"
+    },
+    {
+      "name": "Moonrise Distillery Rye",
+      "category": "Spirit",
+      "quantity": 1,
+      "unit": "bottle",
+      "tags": [],
+      "lowThreshold": 0,
+      "id": "1791745844520"
     }
   ]
 }
