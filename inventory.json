@@ -152,6 +152,15 @@
       "tags": [],
       "lowThreshold": 0,
       "id": "1791746138356"
+    },
+    {
+      "name": "Orgeat",
+      "category": "Syrup",
+      "quantity": 0.5,
+      "unit": "bottle",
+      "tags": [],
+      "lowThreshold": 0,
+      "id": "1791746153573"
     }
   ]
 }
