@@ -75,7 +75,7 @@
     {
       "name": "Dry Vermouth",
       "category": "Spirit",
-      "quantity": 2,
+      "quantity": 3,
       "unit": "bottle",
       "tags": [],
       "lowThreshold": 0.5,
