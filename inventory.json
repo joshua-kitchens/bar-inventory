@@ -323,6 +323,15 @@
       "tags": [],
       "lowThreshold": 0,
       "id": "1791746868375"
+    },
+    {
+      "name": "aperol",
+      "category": "Spirit",
+      "quantity": 1,
+      "unit": "bottle",
+      "tags": [],
+      "lowThreshold": 0,
+      "id": "1791746903725"
     }
   ]
 }
