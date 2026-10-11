@@ -287,6 +287,15 @@
       "tags": [],
       "lowThreshold": 1,
       "id": "1791746652674"
+    },
+    {
+      "name": "Kirkland Vodka",
+      "category": "Spirit",
+      "quantity": 3,
+      "unit": "bottle",
+      "tags": [],
+      "lowThreshold": 1,
+      "id": "1791746754308"
     }
   ]
 }
