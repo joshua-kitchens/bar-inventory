@@ -404,6 +404,15 @@
       "tags": [],
       "lowThreshold": 1,
       "id": "1791747133375"
+    },
+    {
+      "name": "Angostura Bitters",
+      "category": "Bitters",
+      "quantity": 1,
+      "unit": "bottle",
+      "tags": [],
+      "lowThreshold": 1,
+      "id": "1791747156709"
     }
   ]
 }
