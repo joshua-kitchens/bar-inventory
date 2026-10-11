@@ -413,6 +413,15 @@
       "tags": [],
       "lowThreshold": 1,
       "id": "1791747156709"
+    },
+    {
+      "name": "Simple Syrup",
+      "category": "Syrup",
+      "quantity": 1,
+      "unit": "bottle",
+      "tags": [],
+      "lowThreshold": 0,
+      "id": "1791747170609"
     }
   ]
 }
