@@ -395,6 +395,15 @@
       "tags": [],
       "lowThreshold": 0,
       "id": "1791747109276"
+    },
+    {
+      "name": "Chocolate Bitters",
+      "category": "Bitters",
+      "quantity": 1,
+      "unit": "bottle",
+      "tags": [],
+      "lowThreshold": 1,
+      "id": "1791747133375"
     }
   ]
 }
