@@ -245,6 +245,8 @@ export default function BarInventory() {
   const [search, setSearch] = useState("");
   const [activeTag, setActiveTag] = useState(null);
   const [activeCategory, setActiveCategory] = useState(null);
+  const [showLowOnly, setShowLowOnly] = useState(false);
+  const [copied, setCopied] = useState(false);
   const [syncStatus, setSyncStatus] = useState("idle");
   const pendingItemsRef = useRef(null);
   const saveTimeoutRef = useRef(null);
@@ -324,10 +326,21 @@ export default function BarInventory() {
     const matchSearch = !search || item.name.toLowerCase().includes(search.toLowerCase()) || item.tags.some(t => t.toLowerCase().includes(search.toLowerCase()));
     const matchTag = !activeTag || item.tags.includes(activeTag);
     const matchCat = !activeCategory || item.category === activeCategory;
-    return matchSearch && matchTag && matchCat;
+    const matchLow = !showLowOnly || item.quantity <= item.lowThreshold;
+    return matchSearch && matchTag && matchCat && matchLow;
   });
 
-  const lowCount = items.filter(i => i.quantity <= i.lowThreshold).length;
+  const lowItems = items.filter(i => i.quantity <= i.lowThreshold);
+  const lowCount = lowItems.length;
+
+  function copyLowStockList() {
+    const lines = lowItems.map(i => `- ${i.name} (${i.quantity} ${pluralUnit(i.unit, i.quantity)} left, need ${i.lowThreshold})`);
+    const text = `Low Stock List:\n${lines.join("\n")}`;
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }
 
   if (!loaded) return (
     <div style={{ background: "#0a3d2e", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -347,11 +360,24 @@ export default function BarInventory() {
             </div>
             <div style={{ fontFamily: "Barlow, sans-serif", fontSize: 13, color: "#6db8a0", marginTop: 3 }}>
               {items.length} item{items.length !== 1 ? "s" : ""}
-              {lowCount > 0 && <span style={{ color: "#e07a50", marginLeft: 10 }}>⚠ {lowCount} running low</span>}
+              {lowCount > 0 && (
+                <span
+                  onClick={() => setShowLowOnly(v => !v)}
+                  style={{ color: "#e07a50", marginLeft: 10, cursor: "pointer", textDecoration: showLowOnly ? "underline" : "none" }}
+                  title={showLowOnly ? "Show all items" : "Show only low stock items"}
+                >
+                  ⚠ {lowCount} running low
+                </span>
+              )}
             </div>
           </div>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 10 }}>
             <button className="btn btn-primary" onClick={() => setModal("add")}>+ Add Item</button>
+            {showLowOnly && lowCount > 0 && (
+              <button className="btn btn-ghost" style={{ fontSize: 12, padding: "5px 12px" }} onClick={copyLowStockList}>
+                {copied ? "✓ Copied" : "Copy Low Stock List"}
+              </button>
+            )}
             <SyncIndicator
               status={syncStatus}
               onRefresh={fetchFromGitHub}
@@ -366,6 +392,15 @@ export default function BarInventory() {
             <span className="search-icon" style={{ fontSize: 16 }}>⌕</span>
             <input className="input" placeholder="Search items or drinks…" value={search} onChange={e => setSearch(e.target.value)} />
           </div>
+
+          {showLowOnly && (
+            <div style={{ display: "flex", alignItems: "center", gap: 10, fontFamily: "Barlow, sans-serif", fontSize: 13 }}>
+              <span style={{ color: "#e07a50" }}>Showing low stock items only</span>
+              <button className="btn btn-ghost" style={{ fontSize: 12, padding: "3px 10px" }} onClick={() => setShowLowOnly(false)}>
+                Clear
+              </button>
+            </div>
+          )}
 
           {usedCategories.length > 1 && (
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
