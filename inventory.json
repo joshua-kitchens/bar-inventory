@@ -402,7 +402,7 @@
       "quantity": 1,
       "unit": "bottle",
       "tags": [],
-      "lowThreshold": 1,
+      "lowThreshold": 0,
       "id": "1791747156709"
     },
     {
