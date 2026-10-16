@@ -431,6 +431,15 @@
       "tags": [],
       "lowThreshold": 0,
       "id": "1791747925113"
+    },
+    {
+      "name": "Tanquery",
+      "category": "Spirit",
+      "quantity": 0.5,
+      "unit": "bottle",
+      "tags": [],
+      "lowThreshold": 1,
+      "id": "1792189439390"
     }
   ]
 }
