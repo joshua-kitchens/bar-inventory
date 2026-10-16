@@ -165,7 +165,7 @@
     {
       "name": "Kirkland Tequila Blanco",
       "category": "Spirit",
-      "quantity": 1,
+      "quantity": 0,
       "unit": "bottle",
       "tags": [],
       "lowThreshold": 1,
