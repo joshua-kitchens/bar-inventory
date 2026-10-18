@@ -435,7 +435,7 @@
     {
       "name": "Tanquery",
       "category": "Spirit",
-      "quantity": 0.5,
+      "quantity": 0,
       "unit": "bottle",
       "tags": [],
       "lowThreshold": 1,
