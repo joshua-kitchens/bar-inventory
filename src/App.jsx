@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { isConfigured, loadInventory, saveInventory, clearConfig } from "./github";
-import GitHubSetup from "./GitHubSetup";
+import { loadInventory, saveItem, deleteItem } from "./api";
 
 const UNITS = ["bottle", "can", "jar", "handle", "fifth", "case", "six-pack", "liter", "oz", "ml", "gallon", "keg"];
 const CATEGORIES = ["Spirit", "Mixer", "Beer", "Wine", "Liqueur", "Bitters", "Syrup", "Juice", "Garnish", "Other"];
@@ -110,30 +109,19 @@ function pluralUnit(unit, qty) {
   return unit + "s";
 }
 
-function SyncIndicator({ status, onRefresh, onSetup }) {
-  const configured = isConfigured();
-  if (!configured) {
-    return (
-      <button className="btn btn-ghost" onClick={onSetup} style={{ fontSize: 12, padding: "5px 12px" }}>
-        ⚙ Set up sync
-      </button>
-    );
-  }
-  const dot = { loading: "#c9a870", saving: "#c9a870", synced: "#6db8a0", error: "#e07a50", pending: "#c9a870" };
-  const label = { loading: "Loading…", saving: "Saving…", synced: "Synced", error: "Sync error", pending: "Pending…" };
+function SyncIndicator({ status, onRefresh }) {
+  const dot = { loading: "#c9a870", saving: "#c9a870", synced: "#6db8a0", error: "#e07a50" };
+  const label = { loading: "Loading…", saving: "Saving…", synced: "Saved", error: "Sync error" };
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
       <span style={{ color: dot[status] || "#6db8a0", fontFamily: "Barlow, sans-serif", fontSize: 12 }}>
         ● {label[status] || ""}
       </span>
       {(status === "synced" || status === "error") && (
-        <button className="btn btn-ghost" onClick={onRefresh} style={{ fontSize: 12, padding: "4px 10px" }} title="Refresh from GitHub">
+        <button className="btn btn-ghost" onClick={onRefresh} style={{ fontSize: 12, padding: "4px 10px" }} title="Reload from server">
           ↻
         </button>
       )}
-      <button className="btn btn-ghost" onClick={onSetup} style={{ fontSize: 12, padding: "4px 10px" }} title="Sync settings">
-        ⚙
-      </button>
     </div>
   );
 }
@@ -241,22 +229,22 @@ export default function BarInventory() {
   const [items, setItems] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [modal, setModal] = useState(null); // null | "add" | item
-  const [showSetup, setShowSetup] = useState(false);
   const [search, setSearch] = useState("");
   const [activeTag, setActiveTag] = useState(null);
   const [activeCategory, setActiveCategory] = useState(null);
   const [showLowOnly, setShowLowOnly] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [syncStatus, setSyncStatus] = useState("idle");
-  const pendingItemsRef = useRef(null);
-  const saveTimeoutRef = useRef(null);
+  const [syncStatus, setSyncStatus] = useState("loading");
+  const inFlightRef = useRef(0);
+  const failedRef = useRef(false);
 
-  async function fetchFromGitHub() {
+  async function fetchFromServer() {
     setSyncStatus("loading");
     try {
-      const githubItems = await loadInventory();
-      setItems(githubItems);
-      localStorage.setItem("bar-inventory-items", JSON.stringify(githubItems));
+      const serverItems = await loadInventory();
+      setItems(serverItems);
+      localStorage.setItem("bar-inventory-items", JSON.stringify(serverItems));
+      failedRef.current = false;
       setSyncStatus("synced");
     } catch {
       setSyncStatus("error");
@@ -269,54 +257,41 @@ export default function BarInventory() {
       if (cached) {
         try { setItems(JSON.parse(cached)); } catch {}
       }
-      if (isConfigured()) {
-        await fetchFromGitHub();
-      } else {
-        setSyncStatus("not-configured");
-      }
       setLoaded(true);
+      await fetchFromServer();
     })();
   }, []);
 
-  async function persist(newItems) {
+  // Update the screen right away, then send the one changed item to the server.
+  async function persist(newItems, write) {
     setItems(newItems);
     localStorage.setItem("bar-inventory-items", JSON.stringify(newItems));
 
-    if (!isConfigured()) return;
-
-    pendingItemsRef.current = newItems;
-    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
-    setSyncStatus("pending");
-
-    saveTimeoutRef.current = setTimeout(async () => {
-      setSyncStatus("saving");
-      try {
-        await saveInventory(pendingItemsRef.current);
-        setSyncStatus("synced");
-      } catch {
-        setSyncStatus("error");
-      }
-    }, 1500);
+    inFlightRef.current++;
+    setSyncStatus("saving");
+    try {
+      await write();
+    } catch {
+      failedRef.current = true;
+    }
+    if (--inFlightRef.current === 0) setSyncStatus(failedRef.current ? "error" : "synced");
   }
 
   function handleSave(item) {
     const exists = items.find(i => i.id === item.id);
-    persist(exists ? items.map(i => i.id === item.id ? item : i) : [...items, item]);
+    persist(exists ? items.map(i => i.id === item.id ? item : i) : [...items, item], () => saveItem(item));
     setModal(null);
   }
 
   function handleDelete(id) {
-    persist(items.filter(i => i.id !== id));
+    persist(items.filter(i => i.id !== id), () => deleteItem(id));
     setModal(null);
   }
 
   function adjustQty(id, delta) {
-    persist(items.map(i => i.id === id ? { ...i, quantity: Math.max(0, +(i.quantity + delta).toFixed(1)) } : i));
-  }
-
-  function handleSetupComplete() {
-    setShowSetup(false);
-    fetchFromGitHub();
+    const item = items.find(i => i.id === id);
+    const updated = { ...item, quantity: Math.max(0, +(item.quantity + delta).toFixed(1)) };
+    persist(items.map(i => i.id === id ? updated : i), () => saveItem(updated));
   }
 
   const allTags = [...new Set(items.flatMap(i => i.tags))].sort();
@@ -378,11 +353,7 @@ export default function BarInventory() {
                 {copied ? "✓ Copied" : "Copy Low Stock List"}
               </button>
             )}
-            <SyncIndicator
-              status={syncStatus}
-              onRefresh={fetchFromGitHub}
-              onSetup={() => setShowSetup(true)}
-            />
+            <SyncIndicator status={syncStatus} onRefresh={fetchFromServer} />
           </div>
         </div>
 
@@ -486,14 +457,6 @@ export default function BarInventory() {
             onSave={handleSave}
             onClose={() => setModal(null)}
             onDelete={handleDelete}
-          />
-        )}
-
-        {showSetup && (
-          <GitHubSetup
-            isFirstTime={!isConfigured()}
-            onComplete={handleSetupComplete}
-            onClose={() => setShowSetup(false)}
           />
         )}
       </div>

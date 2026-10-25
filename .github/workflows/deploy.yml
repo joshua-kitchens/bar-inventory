@@ -1,39 +1,103 @@
-name: Deploy to GitHub Pages
+# Build the app and copy it to the droplet on every push to main.
+# Needs repo secrets (Settings > Secrets and variables > Actions):
+#   DEPLOY_HOST         droplet IP or hostname
+#   DEPLOY_USER         SSH user that owns /srv/sites/inventory
+#   DEPLOY_SSH_KEY      private key for that user (the public half goes in its authorized_keys)
+#   DEPLOY_KNOWN_HOSTS  output of `ssh-keyscan <droplet ip>`, so the host key is pinned
+#   DEPLOY_PORT         optional; SSH port if not 22
+#
+# On the droplet: /srv/sites/inventory/server.mjs serves /srv/sites/inventory/dist and the
+# /api routes on port 3006 (deploy/inventory.service). The SQLite database lives in
+# /var/lib/inventory, outside the upload folder, so deploys never touch it. App changes need
+# no restart; the service restarts only when server.mjs itself changes.
+name: Deploy
 
 on:
   push:
     branches: [main]
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
+  workflow_dispatch:
 
 concurrency:
-  group: pages
+  group: deploy
   cancel-in-progress: true
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
+    env:
+      DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
         with:
-          node-version: '20'
+          node-version: 24
           cache: npm
+
       - run: npm ci
       - run: npm run build
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - uses: actions/deploy-pages@v4
-        id: deployment
+      - name: Bundle
+        run: |
+          mkdir bundle
+          cp deploy/server.mjs bundle/
+          cp -r dist bundle/dist
+          # Only read on the server's very first start, to import the old GitHub-stored list.
+          if [ -f inventory.json ]; then cp inventory.json bundle/; fi
+
+      - name: Upload to droplet
+        if: env.DEPLOY_HOST != ''
+        env:
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
+        run: |
+          mkdir -m 700 -p ~/.ssh
+          # Secrets pasted on Windows can carry \r, which breaks both files.
+          printf '%s\n' "$DEPLOY_SSH_KEY" | tr -d '\r' > ~/.ssh/deploy_key
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" | tr -d '\r' > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/deploy_key ~/.ssh/known_hosts
+          SSH="ssh -i $HOME/.ssh/deploy_key -p ${DEPLOY_PORT:-22} -o BatchMode=yes -o ConnectTimeout=15"
+
+          if ! ssh-keygen -y -f ~/.ssh/deploy_key > /dev/null; then
+            echo "::error::DEPLOY_SSH_KEY isn't a readable private key. Paste the whole private key file, including the BEGIN and END lines."
+            exit 1
+          fi
+          if ! grep -q '^[^#]' ~/.ssh/known_hosts; then
+            echo "::error::DEPLOY_KNOWN_HOSTS is empty. Set it to the output of: ssh-keyscan $DEPLOY_HOST"
+            exit 1
+          fi
+
+          echo "Checking SSH login as $DEPLOY_USER@$DEPLOY_HOST (port ${DEPLOY_PORT:-22})..."
+          if ! out=$($SSH "$DEPLOY_USER@$DEPLOY_HOST" 'echo ok; command -v rsync' 2>&1); then
+            echo "$out"
+            case "$out" in
+              *"Host key verification failed"*|*"No ED25519 host key"*|*"REMOTE HOST IDENTIFICATION"*)
+                echo "::error::Host key mismatch. Re-run 'ssh-keyscan $DEPLOY_HOST' and paste the output into DEPLOY_KNOWN_HOSTS." ;;
+              *"Permission denied"*)
+                echo "::error::Key rejected. Check the public key is in /home/$DEPLOY_USER/.ssh/authorized_keys and that DEPLOY_USER is right." ;;
+              *"timed out"*|*"Connection refused"*|*"No route"*|*"Could not resolve"*)
+                echo "::error::Can't reach $DEPLOY_HOST on port ${DEPLOY_PORT:-22}. Check the IP, the DigitalOcean/ufw firewall, and DEPLOY_PORT if SSH isn't on 22." ;;
+              *)
+                echo "::error::SSH login failed; see the output above." ;;
+            esac
+            exit 1
+          fi
+          if ! grep -q rsync <<<"$out"; then
+            echo "::error::rsync isn't installed on the droplet. Run: sudo apt install -y rsync"
+            exit 1
+          fi
+
+          changes=$(rsync -azi --delete -e "$SSH" bundle/ "$DEPLOY_USER@$DEPLOY_HOST:/srv/sites/inventory/")
+          echo "$changes"
+
+          if grep -q ' server\.mjs$' <<<"$changes"; then
+            echo "server.mjs changed; restarting inventory service"
+            $SSH "$DEPLOY_USER@$DEPLOY_HOST" 'sudo -n /usr/bin/systemctl restart inventory' \
+              || echo "::warning::Could not restart the inventory service. Run 'sudo systemctl restart inventory' on the droplet."
+          fi
+
+      - name: Deploy skipped
+        if: env.DEPLOY_HOST == ''
+        run: echo "::warning::DEPLOY_HOST secret not set; site was built but not uploaded."

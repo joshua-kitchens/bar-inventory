@@ -1,0 +1,28 @@
+# systemd unit for the bar inventory's Node server.
+# Install:  sudo cp inventory.service /etc/systemd/system/ && sudo systemctl enable --now inventory
+#
+# Uses a throwaway system user (DynamicUser) with a read-only view of the disk, so the
+# web process can't modify the site files or anything else. The only writable place is
+# StateDirectory, /var/lib/inventory, which holds the SQLite database and survives deploys.
+# If Node came from nvm instead of apt/NodeSource, change ExecStart to the output of `which node`.
+
+[Unit]
+Description=Bar inventory (Node + SQLite)
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/node /srv/sites/inventory/server.mjs
+Environment=PORT=3006
+Environment=HOST=127.0.0.1
+Environment=DB_PATH=/var/lib/inventory/inventory.db
+Environment=NODE_NO_WARNINGS=1
+StateDirectory=inventory
+Restart=on-failure
+DynamicUser=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+NoNewPrivileges=yes
+
+[Install]
+WantedBy=multi-user.target
